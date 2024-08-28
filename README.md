@@ -14,7 +14,7 @@ run_kr_abundance --input_dir /home/harouna/ARSNACAdata/bamfiles/mypipeline --out
 * add --use_precomputed_reports to used procomputed kraken report
 
 
-  #Installation
+  # Installation
   * git clone https://github.com/Harounas/Metagenomics_pipeline.git
   * cd Metagenomics_pipeline
   * sudo pip install -e .
