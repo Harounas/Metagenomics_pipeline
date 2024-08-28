@@ -1,19 +1,29 @@
 import os
+import pandas as pd
+import random
+from collections import defaultdict
+import plotly.express as px
+
 from .trimmomatic import run_trimmomatic
 from .bowtie2 import run_bowtie2
 from .kraken2 import run_kraken2
-import pandas as pd
-from collections import defaultdict
-import plotly.express as px
-import random
 
-def process_sample(forward, reverse, base_name, bowtie2_index, kraken_db, output_dir, threads):
+def process_sample(forward, reverse, base_name, bowtie2_index, kraken_db, output_dir, threads, run_bowtie):
+    # Step 1: Run Trimmomatic
     trimmed_forward, trimmed_reverse = run_trimmomatic(forward, reverse, base_name, output_dir, threads)
-    unmapped_r1, unmapped_r2 = run_bowtie2(trimmed_forward, trimmed_reverse, base_name, bowtie2_index, output_dir, threads)
+    
+    # Step 2: Optionally Run Bowtie2 to deplete host genome reads
+    if run_bowtie:
+        unmapped_r1, unmapped_r2 = run_bowtie2(trimmed_forward, trimmed_reverse, base_name, bowtie2_index, output_dir, threads)
+    else:
+        unmapped_r1, unmapped_r2 = trimmed_forward, trimmed_reverse
+    
+    # Step 3: Use the reads as input for Kraken2
     kraken_report = run_kraken2(unmapped_r1, unmapped_r2, base_name, kraken_db, output_dir, threads)
+    
     return kraken_report
 
-def aggregate_kraken_results(kraken_dir, metadata_file, read_count, top_N, virus, bacteria):
+def aggregate_kraken_results(kraken_dir, metadata_file, read_count):
     metadata = pd.read_csv(metadata_file, sep=",")
     sample_id_col = metadata.columns[0]  # Assume the first column is the sample ID
 
@@ -22,7 +32,7 @@ def aggregate_kraken_results(kraken_dir, metadata_file, read_count, top_N, virus
 
     # Iterate over each Kraken report file
     for file_name in os.listdir(kraken_dir):
-        if file_name.endswith("_report.txt"):
+        if file_name.endswith("_kraken.txt"):
             with open(os.path.join(kraken_dir, file_name), 'r') as f:
                 for line in f:
                     fields = line.strip().split('\t')
@@ -61,69 +71,114 @@ def aggregate_kraken_results(kraken_dir, metadata_file, read_count, top_N, virus
 
     return merged_tsv_path
 
-def generate_abundance_plots(merged_tsv_path, virus, bacteria, top_N):
+def generate_abundance_plots(merged_tsv_path, top_N):
     df = pd.read_csv(merged_tsv_path, sep="\t")
     df.columns = df.columns.str.replace('/', '_').str.replace(' ', '_')
     df = df.apply(lambda col: col.map(lambda x: x.strip() if isinstance(x, str) else x))
     df = df[df['Scientific_name'] != 'Homo sapiens']
 
-    if virus:
-        df = df[df['Scientific_name'].str.contains('Virus', case=False, na=False)]
-        df = df.rename(columns={'Scientific_name': 'Virus_Type'})
-    elif bacteria:
-        df = df[~df['Scientific_name'].str.contains('Virus', case=False, na=False)]
-        df = df.rename(columns={'Scientific_name': 'Bacteria_Type'})
+    # Generate both viral and bacterial abundance plots
+    for focus, filter_str, plot_title in [
+        ('Virus_Type', 'Virus', 'Viral'),
+        ('Bacteria_Type', 'Virus', 'Bacterial')
+    ]:
+        if focus == 'Bacteria_Type':
+            df_focus = df[~df['Scientific_name'].str.contains(filter_str, case=False, na=False)]
+        else:
+            df_focus = df[df['Scientific_name'].str.contains(filter_str, case=False, na=False)]
+        df_focus = df_focus.rename(columns={'Scientific_name': focus})
 
-    if top_N:
-        target_column = 'Virus_Type' if virus else 'Bacteria_Type'
-        top_N_categories = df[target_column].value_counts().head(top_N).index
-        df = df[df[target_column].isin(top_N_categories)]
+        if top_N:
+            top_N_categories = df_focus[focus].value_counts().head(top_N).index
+            df_focus = df_focus[df_focus[focus].isin(top_N_categories)]
 
-    target_column = 'Virus_Type' if virus else 'Bacteria_Type'
-    categorical_cols = df.select_dtypes(include=['object']).columns.tolist()
-    categorical_cols.remove(target_column)
+        categorical_cols = df_focus.select_dtypes(include=['object']).columns.tolist()
+        categorical_cols.remove(focus)
 
-    for col in categorical_cols:
-        grouped_sum = df.groupby([target_column, col])['Nr_frag_direct_at_taxon'].mean().reset_index()
+        for col in categorical_cols:
+            grouped_sum = df_focus.groupby([focus, col])['Nr_frag_direct_at_taxon'].mean().reset_index()
 
-        colordict = defaultdict(int)
-        random_colors = ["#{:06x}".format(random.randint(0, 0xFFFFFF)) for _ in range(len(grouped_sum[col].unique()))]
-        for target, color in zip(grouped_sum[target_column].unique(), random_colors):
-            colordict[target] = color
+            colordict = defaultdict(int)
+            random_colors = ["#{:06x}".format(random.randint(0, 0xFFFFFF)) for _ in range(len(grouped_sum[col].unique()))]
+            for target, color in zip(grouped_sum[focus].unique(), random_colors):
+                colordict[target] = color
 
-        plot_width = 1100 + 5 * len(grouped_sum[col].unique())
-        plot_height = 800 + 5 * len(grouped_sum[col].unique())
-        font_size = max(10, 14 - len(grouped_sum[col].unique()) // 10)
+            plot_width = 1100 + 5 * len(grouped_sum[col].unique())
+            plot_height = 800 + 5 * len(grouped_sum[col].unique())
+            font_size = max(10, 14 - len(grouped_sum[col].unique()) // 10)
 
-        title_prefix = "Viral" if virus else "Bacterial"
-        fig = px.bar(
-            grouped_sum,
-            x=col,
-            y='Nr_frag_direct_at_taxon',
-            color=target_column,
-            color_discrete_map=colordict,
-            title=f"{title_prefix} Abundance by {col}"
-        )
+            fig = px.bar(
+                grouped_sum,
+                x=col,
+                y='Nr_frag_direct_at_taxon',
+                color=focus,
+                color_discrete_map=colordict,
+                title=f"{plot_title} Abundance by {col}"
+            )
 
-        fig.update_layout(
-            xaxis=dict(tickfont=dict(size=font_size), tickangle=45),
-            yaxis=dict(tickfont=dict(size=font_size)),
-            title=dict(text=f'Average {title_prefix} Abundance by {col}', x=0.5, font=dict(size=16)),
-            bargap=0.5,
-            legend=dict(
-                font=dict(size=font_size),
-                x=1,
-                y=1,
-                traceorder='normal',
-                orientation='v',
-                itemwidth=30,
-                itemsizing='constant',
-                itemclick='toggleothers',
-                itemdoubleclick='toggle'
-            ),
-            width=plot_width,
-            height=plot_height
-        )
+            fig.update_layout(
+                xaxis=dict(tickfont=dict(size=font_size), tickangle=45),
+                yaxis=dict(tickfont=dict(size=font_size)),
+                title=dict(text=f'Average {plot_title} Abundance by {col}', x=0.5, font=dict(size=16)),
+                bargap=0.5,
+                legend=dict(
+                    font=dict(size=font_size),
+                    x=1,
+                    y=1,
+                    traceorder='normal',
+                    orientation='v',
+                    itemwidth=30,
+                    itemsizing='constant',
+                    itemclick='toggleothers',
+                    itemdoubleclick='toggle'
+                ),
+                width=plot_width,
+                height=plot_height
+            )
 
-        fig.write_image(f"{title_prefix}Abundance_by_{col}.png", format='png', scale=3)
+            fig.write_image(f"{plot_title}_Abundance_by_{col}.png", format='png', scale=3)
+Step 2: Update scripts/run_pipeline.py
+Now update the run_pipeline.py script to include an option for making Bowtie2 depletion optional and generate both viral and bacterial plots:
 
+python
+Copy code
+from bioinformatics_pipeline.pipeline import process_sample, aggregate_kraken_results, generate_abundance_plots
+import argparse
+import os
+import glob
+
+def main():
+    parser = argparse.ArgumentParser(description="Pipeline for Trimmomatic trimming, Bowtie2 host depletion (optional), and Kraken2 taxonomic classification.")
+    parser.add_argument("--kraken_db", required=True, help="Path to Kraken2 database.")
+    parser.add_argument("--bowtie2_index", help="Path to Bowtie2 index (optional).")
+    parser.add_argument("--output_dir", required=True, help="Directory to save output files.")
+    parser.add_argument("--input_dir", required=True, help="Directory containing input FASTQ files.")
+    parser.add_argument("--threads", type=int, default=8, help="Number of threads to use for Trimmomatic, Bowtie2, and Kraken2.")
+    parser.add_argument("--metadata_file", required=True, help="Path to the metadata CSV file.")
+    parser.add_argument("--read_count", type=int, default=0, help="Minimum read count threshold.")
+    parser.add_argument("--top_N", type=int, default=None, help="Select the top N most common viruses or bacteria.")
+    parser.add_argument("--no_bowtie2", action='store_true', help="Skip Bowtie2 host depletion.")
+
+    args = parser.parse_args()
+    os.makedirs(args.output_dir, exist_ok=True)
+
+    run_bowtie = not args.no_bowtie2 and args.bowtie2_index is not None
+
+    for forward in glob.glob(os.path.join(args.input_dir, "*_R1.fastq*")):
+        base_name = os.path.basename(forward).replace("_R1.fastq.gz", "").replace("_R1.fastq", "")
+
+        reverse = os.path.join(args.input_dir, f"{base_name}_R2.fastq.gz") if forward.endswith(".gz") else os.path.join(args.input_dir, f"{base_name}_R2.fastq")
+        
+        if not os.path.isfile(reverse):
+            reverse = None
+
+        process_sample(forward, reverse, base_name, args.bowtie2_index, args.kraken_db, args.output_dir, args.threads, run_bowtie)
+
+    # Step 2: Aggregate Kraken results
+    merged_tsv_path = aggregate_kraken_results(args.output_dir, args.metadata_file, args.read_count)
+
+    # Step 3: Generate both viral and bacterial abundance plots
+    generate_abundance_plots(merged_tsv_path, args.top_N)
+
+if __name__ == "__main__":
+    main()
