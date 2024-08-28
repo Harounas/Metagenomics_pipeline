@@ -10,7 +10,8 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "run_kr_abundance=Metagenomics_pipeline.scripts.run_kr_abundance:main",
+           # "run_kr_abundance=Metagenomics_pipeline.scripts.run_kr_abundance:main",
+             "run_kr_abundance=scripts.run_kr_abundance:main",
         ],
     },
     author="Harouna",
