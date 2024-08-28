@@ -37,7 +37,7 @@ def main():
         if not os.path.isfile(reverse):
             reverse = None
 
-        process_sample(forward, reverse, base_name, args.bowtie2_index, args.kraken_db, args.output_dir, args.threads, run_bowtie)
+        process_sample(forward, reverse, base_name, args.bowtie2_index, args.kraken_db, args.output_dir, args.threads, run_bowtie,args.use_precomputed_reports)
 
     # Step 2: Aggregate Kraken results
     merged_tsv_path = aggregate_kraken_results(args.output_dir, args.metadata_file, args.read_count)
