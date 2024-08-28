@@ -1,5 +1,5 @@
-import sys
-sys.path.append('/home/harouna/ARSNACAdata/bamfiles/mypipeline/Metagenomics_pipeline/')
+#import sys
+#sys.path.append('/home/harouna/ARSNACAdata/bamfiles/mypipeline/Metagenomics_pipeline/')
 from Metagenomics_pipeline.kraken_abundance_pipeline import process_sample, aggregate_kraken_results, generate_abundance_plots
 import argparse
 import os
