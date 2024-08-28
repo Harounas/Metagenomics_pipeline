@@ -20,6 +20,8 @@ def main():
     parser.add_argument("--read_count", type=int, default=0, help="Minimum read count threshold.")
     parser.add_argument("--top_N", type=int, default=None, help="Select the top N most common viruses or bacteria.")
     parser.add_argument("--no_bowtie2", action='store_true', help="Skip Bowtie2 host depletion.")
+    parser.add_argument("--bacteria", action='store_true', help="Generate bacterial abundance plots.")
+    parser.add_argument("--virus", action='store_true', help="Generate viral abundance plots.")
 
     args = parser.parse_args()
     os.makedirs(args.output_dir, exist_ok=True)
