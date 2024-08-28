@@ -137,11 +137,7 @@ def generate_abundance_plots(merged_tsv_path, top_N):
             )
 
             fig.write_image(f"{plot_title}_Abundance_by_{col}.png", format='png', scale=3)
-Step 2: Update scripts/run_pipeline.py
-Now update the run_pipeline.py script to include an option for making Bowtie2 depletion optional and generate both viral and bacterial plots:
 
-python
-Copy code
 from bioinformatics_pipeline.pipeline import process_sample, aggregate_kraken_results, generate_abundance_plots
 import argparse
 import os
