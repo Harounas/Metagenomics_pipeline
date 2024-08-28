@@ -10,6 +10,8 @@ run_kr_abundance --input_dir /home/harouna/ARSNACAdata/bamfiles/mypipeline --out
 * --read_count: minimum read count
 * --top_N N: select top N viral or bacterial species
 * --virus: we are considering only virus. Use --bacteria if you need only bacteria
+* add --no_bowtie if you don't want to deplete
+* add --use_precomputed_reports to used procomputed kraken report
 
 
   #Installation
