@@ -1,8 +1,10 @@
 #import sys
 #sys.path.append('/home/harouna/ARSNACAdata/bamfiles/mypipeline/Metagenomics_pipeline/')
+import sys
+import os
+sys.path.append(os.getcwd())
 from Metagenomics_pipeline.kraken_abundance_pipeline import process_sample, aggregate_kraken_results, generate_abundance_plots
 import argparse
-import os
 import glob
 def main():
     parser = argparse.ArgumentParser(description="Pipeline for Trimmomatic trimming, Bowtie2 host depletion, and Kraken2 taxonomic classification.")
