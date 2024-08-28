@@ -32,7 +32,7 @@ def aggregate_kraken_results(kraken_dir, metadata_file, read_count):
 
     # Iterate over each Kraken report file
     for file_name in os.listdir(kraken_dir):
-        if file_name.endswith("_kraken.txt"):
+        if file_name.endswith("_report.txt"):
             with open(os.path.join(kraken_dir, file_name), 'r') as f:
                 for line in f:
                     fields = line.strip().split('\t')
