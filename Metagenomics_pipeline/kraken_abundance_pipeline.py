@@ -3,7 +3,7 @@ import pandas as pd
 import random
 from collections import defaultdict
 import plotly.express as px
-
+import plotly.io as pio
 from .trimmomatic import run_trimmomatic
 from .bowtie2 import run_bowtie2
 from .kraken2 import run_kraken2
@@ -141,5 +141,6 @@ def generate_abundance_plots(merged_tsv_path, top_N):
                 height=plot_height
             )
 
-            fig.write_image(f"{plot_title}_Abundance_by_{col}.png", format='png', scale=3)
+            #fig.write_image(f"{plot_title}_Abundance_by_{col}.png", format='png', scale=3)
+             pio.write_image(fig, f"{plot_title}_Abundance_by_{col}.png", scale=3)
 
