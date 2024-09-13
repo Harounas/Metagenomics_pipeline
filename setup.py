@@ -6,7 +6,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         "pandas",
-        "plotly",
+        "plotly", "kaleido",
     ],
     entry_points={
         "console_scripts": [
