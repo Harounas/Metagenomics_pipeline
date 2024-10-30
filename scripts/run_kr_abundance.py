@@ -41,27 +41,36 @@ def main():
         sample_id_df = create_sample_id_df(args.input_dir)
         print("Using sample IDs as metadata.")
         sample_id_df.to_csv(os.path.join(args.output_dir, "sample_ids.csv"), index=False)
-        merged_tsv_path = os.path.join(args.output_dir, "sample_ids.tsv")  # Set a placeholder for metadata
+        merged_tsv_path = aggregate_kraken_results(args.output_dir, sample_id_df=sample_id_df, read_count=args.read_count)
     else:
         if not args.metadata_file:
             raise ValueError("Metadata file must be provided if no_metadata is not specified.")
-        merged_tsv_path = aggregate_kraken_results(args.output_dir, args.metadata_file, args.read_count)
+        merged_tsv_path = aggregate_kraken_results(args.output_dir, metadata_file=args.metadata_file, read_count=args.read_count)
 
     for forward in glob.glob(os.path.join(args.input_dir, "*_R1.fastq*")):
         base_name = os.path.basename(forward).replace("_R1.fastq.gz", "").replace("_R1.fastq", "")
         reverse = os.path.join(args.input_dir, f"{base_name}_R2.fastq.gz") if forward.endswith(".gz") else os.path.join(args.input_dir, f"{base_name}_R2.fastq")
         
+        # Check if reverse file exists before proceeding
         if not os.path.isfile(reverse):
-            reverse = None
+            print(f"Warning: Reverse file {reverse} not found. Skipping sample {base_name}.")
+            continue
 
         try:
             process_sample(forward, reverse, base_name, args.bowtie2_index, args.kraken_db, args.output_dir, args.threads, run_bowtie, args.use_precomputed_reports)
         except Exception as e:
             print(f"Error processing sample {base_name}: {e}")
 
-    # Step 3: Generate both viral and bacterial abundance plots
-    if os.path.isfile(merged_tsv_path):
-        generate_abundance_plots(merged_tsv_path, args.top_N)
+    # Generate abundance plots based on provided flags
+    if merged_tsv_path and os.path.isfile(merged_tsv_path):
+        if args.virus:
+            print("Generating viral abundance plots.")
+            generate_abundance_plots(merged_tsv_path, args.top_N, filter_term='Virus')
+        elif args.bacteria:
+            print("Generating bacterial abundance plots.")
+            generate_abundance_plots(merged_tsv_path, args.top_N, filter_term='Bacteria')
+        else:
+            print("No plot type specified. Use --virus or --bacteria to generate plots.")
 
 if __name__ == "__main__":
     main()
