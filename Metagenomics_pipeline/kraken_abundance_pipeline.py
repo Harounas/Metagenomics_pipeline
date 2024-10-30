@@ -66,9 +66,30 @@ def generate_sample_ids_csv(kraken_dir):
         print(f"Error generating sample_ids.csv: {e}")
         return None
         
-def aggregate_kraken_results(kraken_dir, metadata_file, read_count):
+def aggregate_kraken_results(kraken_dir, metadata_file=None, sample_id_df=None, read_count=10):
+    """
+    Aggregates Kraken results, merging metadata or using sample IDs if metadata is not provided.
+
+    Parameters:
+    - kraken_dir (str): Path to the directory containing Kraken report files.
+    - metadata_file (str, optional): Path to the metadata CSV file. Defaults to None.
+    - sample_id_df (DataFrame, optional): DataFrame of sample IDs. Used if metadata_file is not provided.
+    - read_count (int): Minimum read count threshold for filtering results.
+    
+    Returns:
+    - str: Path to the generated merged TSV file.
+    """
     try:
-        metadata = pd.read_csv(metadata_file, sep=",")
+        # Load metadata from file first, fall back to sample_id_df if not provided
+        if metadata_file:
+            metadata = pd.read_csv(metadata_file, sep=",")
+            print("Using metadata from the provided metadata file.")
+        elif sample_id_df is not None:
+            metadata = sample_id_df
+            print("Using sample IDs as metadata.")
+        else:
+            raise ValueError("Either metadata_file or sample_id_df must be provided.")
+
         sample_id_col = metadata.columns[0]  # Assume the first column is the sample ID
 
         # Dictionary to store aggregated results
@@ -90,6 +111,7 @@ def aggregate_kraken_results(kraken_dir, metadata_file, read_count):
                         extracted_part = '_'.join(parts[:-1])
                         sampleandtaxonid = extracted_part + str(ncbi_ID)
 
+                        # Check if rank code is species-level and meets the read count threshold
                         if rank_code == 'S' and nr_frag_direct_at_taxon >= read_count:
                             if extracted_part in metadata[sample_id_col].unique():
                                 sample_metadata = metadata.loc[metadata[sample_id_col] == extracted_part].iloc[0].to_dict()
@@ -118,7 +140,6 @@ def aggregate_kraken_results(kraken_dir, metadata_file, read_count):
     except Exception as e:
         print(f"Error aggregating Kraken results: {e}")
         return None
-
 
 def generate_abundance_plots(merged_tsv_path, top_N):
     try:
