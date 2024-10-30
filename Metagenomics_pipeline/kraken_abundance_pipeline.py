@@ -1,3 +1,41 @@
+import pandas as pd
+import random
+from collections import defaultdict
+import plotly.express as px
+import plotly.io as pio
+import os
+from .trimmomatic import run_trimmomatic
+from .bowtie2 import run_bowtie2
+from .kraken2 import run_kraken2
+
+def process_sample(forward, reverse, base_name, bowtie2_index, kraken_db, output_dir, threads, run_bowtie, use_precomputed_reports):
+    try:
+        if not use_precomputed_reports:
+            # Step 1: Run Trimmomatic
+            trimmed_forward, trimmed_reverse = run_trimmomatic(forward, reverse, base_name, output_dir, threads)
+
+            # Step 2: Optionally run Bowtie2 to deplete host genome reads
+            if run_bowtie:
+                unmapped_r1, unmapped_r2 = run_bowtie2(trimmed_forward, trimmed_reverse, base_name, bowtie2_index, output_dir, threads)
+            else:
+                unmapped_r1, unmapped_r2 = trimmed_forward, trimmed_reverse
+
+            # Step 3: Run Kraken2 with the reads
+            kraken_report = run_kraken2(unmapped_r1, unmapped_r2, base_name, kraken_db, output_dir, threads)
+        else:
+            # Use the precomputed Kraken2 report
+            kraken_report = os.path.join(output_dir, f"{base_name}_report.txt")
+            if not os.path.exists(kraken_report):
+                raise FileNotFoundError(f"Precomputed Kraken2 report not found: {kraken_report}")
+
+        return kraken_report
+
+    except Exception as e:
+        print(f"Error processing sample {base_name}: {e}")
+        return None
+
+
+
 def aggregate_kraken_results(kraken_dir, metadata_file=None, sample_id_df=None, read_count=0):
     try:
         # Check if metadata_file is provided and exists
