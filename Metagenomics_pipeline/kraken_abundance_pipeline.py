@@ -35,6 +35,7 @@ def process_sample(forward, reverse, base_name, bowtie2_index, kraken_db, output
         return None
 
 
+
 def aggregate_kraken_results(kraken_dir, metadata_file, read_count):
     try:
         metadata = pd.read_csv(metadata_file, sep=",")
@@ -42,7 +43,8 @@ def aggregate_kraken_results(kraken_dir, metadata_file, read_count):
 
         # Dictionary to store aggregated results
         aggregated_results = {}
-        sampleid=[]
+        sampleid = []
+        
         # Iterate over each Kraken report file
         for file_name in os.listdir(kraken_dir):
             if file_name.endswith("_report.txt"):
@@ -81,6 +83,11 @@ def aggregate_kraken_results(kraken_dir, metadata_file, read_count):
             f.write("\t".join(headers) + "\n")
             for sampleandtaxonid, data in aggregated_results.items():
                 f.write("\t".join(str(data[col]) for col in headers) + "\n")
+
+        # Save the sampleid list as a CSV file
+        sampleid_df = pd.DataFrame(sampleid, columns=['Sample_IDs'])
+        sampleid_csv_path = os.path.join(kraken_dir, "sample_ids.csv")
+        sampleid_df.to_csv(sampleid_csv_path, index=False)
 
         return merged_tsv_path
 
