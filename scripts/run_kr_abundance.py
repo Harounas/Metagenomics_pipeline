@@ -1,5 +1,3 @@
-#import sys
-#sys.path.append('/home/harouna/ARSNACAdata/bamfiles/mypipeline/Metagenomics_pipeline/')
 import sys
 import os
 import argparse
@@ -42,12 +40,8 @@ def main():
     if args.no_metadata:
         sample_id_df = create_sample_id_df(args.input_dir)
         print("Using sample IDs as metadata.")
-        # You may want to save this DataFrame as a CSV if needed
         sample_id_df.to_csv(os.path.join(args.output_dir, "sample_ids.csv"), index=False)
-        merged_tsv_path = os.path.join(args.output_dir, "merged_results.tsv")  # Placeholder path
-        #merged_tsv_path = os.path.join(args.output_dir, "sample_ids.csv") 
-        
-        # Use sample_id_df as metadata in the aggregation process if needed
+        merged_tsv_path = os.path.join(args.output_dir, "sample_ids.tsv")  # Set a placeholder for metadata
     else:
         if not args.metadata_file:
             raise ValueError("Metadata file must be provided if no_metadata is not specified.")
@@ -60,10 +54,14 @@ def main():
         if not os.path.isfile(reverse):
             reverse = None
 
-        process_sample(forward, reverse, base_name, args.bowtie2_index, args.kraken_db, args.output_dir, args.threads, run_bowtie, args.use_precomputed_reports)
+        try:
+            process_sample(forward, reverse, base_name, args.bowtie2_index, args.kraken_db, args.output_dir, args.threads, run_bowtie, args.use_precomputed_reports)
+        except Exception as e:
+            print(f"Error processing sample {base_name}: {e}")
 
     # Step 3: Generate both viral and bacterial abundance plots
-    generate_abundance_plots(merged_tsv_path, args.top_N)
+    if os.path.isfile(merged_tsv_path):
+        generate_abundance_plots(merged_tsv_path, args.top_N)
 
 if __name__ == "__main__":
     main()
