@@ -42,7 +42,7 @@ def aggregate_kraken_results(kraken_dir, metadata_file, read_count):
 
         # Dictionary to store aggregated results
         aggregated_results = {}
-
+        sampleid=[]
         # Iterate over each Kraken report file
         for file_name in os.listdir(kraken_dir):
             if file_name.endswith("_report.txt"):
@@ -58,7 +58,7 @@ def aggregate_kraken_results(kraken_dir, metadata_file, read_count):
                         parts = file_name.split('_')
                         extracted_part = '_'.join(parts[:-1])
                         sampleandtaxonid = extracted_part + str(ncbi_ID)
-
+                        sampleid.append(sampleid)
                         if rank_code == 'S' and nr_frag_direct_at_taxon >= read_count:
                             if extracted_part in metadata[sample_id_col].unique():
                                 sample_metadata = metadata.loc[metadata[sample_id_col] == extracted_part].iloc[0].to_dict()
