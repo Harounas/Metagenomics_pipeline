@@ -44,7 +44,9 @@ def main():
         print("Using sample IDs as metadata.")
         # You may want to save this DataFrame as a CSV if needed
         sample_id_df.to_csv(os.path.join(args.output_dir, "sample_ids.csv"), index=False)
-        merged_tsv_path = os.path.join(args.output_dir, "merged_results.tsv")  # Placeholder path
+        #merged_tsv_path = os.path.join(args.output_dir, "merged_results.tsv")  # Placeholder path
+         merged_tsv_path = os.path.join(args.output_dir, "sample_ids.csv") 
+    sample_ids.csv
         # Use sample_id_df as metadata in the aggregation process if needed
     else:
         if not args.metadata_file:
