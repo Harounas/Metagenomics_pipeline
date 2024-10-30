@@ -101,7 +101,10 @@ def aggregate_kraken_results(kraken_dir, metadata_file=None, sample_id_df=None, 
     except Exception as e:
         print(f"Error aggregating Kraken results: {e}")
         return None
-ef generate_abundance_plots(merged_tsv_path, top_N):
+
+
+
+def generate_abundance_plots(merged_tsv_path, top_N):
     try:
         df = pd.read_csv(merged_tsv_path, sep="\t")
         df.columns = df.columns.str.replace('/', '_').str.replace(' ', '_')
