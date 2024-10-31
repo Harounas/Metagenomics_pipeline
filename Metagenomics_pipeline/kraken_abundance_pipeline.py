@@ -112,7 +112,7 @@ def aggregate_kraken_results(kraken_dir, metadata_file=None, sample_id_df=None, 
                         sampleandtaxonid = extracted_part + str(ncbi_ID)
 
                         # Check if rank code is species-level and meets the read count threshold
-                        if rank_code == 'S' and nr_frag_direct_at_taxon >= read_count:
+                        if (rank_code == 'S' or rank_code == 'S1' or rank_code == 'S2' or rank_code == 'S3') and nr_frag_direct_at_taxon >= read_count:
                             if extracted_part in metadata[sample_id_col].unique():
                                 sample_metadata = metadata.loc[metadata[sample_id_col] == extracted_part].iloc[0].to_dict()
                                 aggregated_results[sampleandtaxonid] = {
