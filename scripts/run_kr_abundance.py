@@ -42,11 +42,19 @@ def main():
         logging.error(f"Kraken database directory '{args.kraken_db}' not found.")
         sys.exit(1)
 
-    # Initialize run_bowtie based on user input
+
     run_bowtie = not args.no_bowtie2 and args.bowtie2_index is not None
-    if run_bowtie and not os.path.isfile(args.bowtie2_index):
-        logging.error(f"Bowtie2 index '{args.bowtie2_index}' not found.")
-        sys.exit(1)
+
+    for forward in glob.glob(os.path.join(args.input_dir, "*_R1.fastq*")):
+        base_name = os.path.basename(forward).replace("_R1.fastq.gz", "").replace("_R1.fastq", "")
+ 
+        reverse = os.path.join(args.input_dir, f"{base_name}_R2.fastq.gz") if forward.endswith(".gz") else os.path.join(args.input_dir, f"{base_name}_R2.fastq")
+        
+        if not os.path.isfile(reverse):
+            reverse = None
+
+        process_sample(forward, reverse, base_name, args.bowtie2_index, args.kraken_db, args.output_dir, args.threads, run_bowtie,args.use_precomputed_reports)
+
 
     # Load metadata or create sample ID DataFrame
     if args.no_metadata:
