@@ -10,8 +10,9 @@ run_kr_abundance --input_dir /home/harouna/ARSNACAdata/bamfiles/mypipeline --out
 * --read_count: minimum read count
 * --top_N N: select top N viral or bacterial species
 * --virus: we are considering only virus. Use --bacteria if you need only bacteria
-* add --no_bowtie if you don't want to deplete
+* add --no_bowtie if you don't need to deplete
 * add --use_precomputed_reports to used procomputed kraken report
+* add --no_metadata if there is no metadata
 
 
   # Installation
@@ -21,6 +22,7 @@ run_kr_abundance --input_dir /home/harouna/ARSNACAdata/bamfiles/mypipeline --out
   * conda install -c bioconda trimmomatic
   * conda install -c bioconda bowtie2
   * conda install -c bioconda kraken2
+    
 
 
 
