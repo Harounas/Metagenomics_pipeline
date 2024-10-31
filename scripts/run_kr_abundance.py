@@ -14,7 +14,7 @@ def create_sample_id_df(input_dir):
     """
     Create a DataFrame with sample IDs based on the input FASTQ file names.
     """
-    sample_ids = [os.path.basename(f).replace("_R1*.fastq.gz", "").replace("_R1*.fastq", "") for f in glob.glob(os.path.join(input_dir, "*_R1*.fastq*"))]
+    sample_ids = [os.path.basename(f).replace("_R1.fastq.gz", "").replace("_R1.fastq", "") for f in glob.glob(os.path.join(input_dir, "*_R1*.fastq*"))]
     sample_id_df = pd.DataFrame(sample_ids, columns=["Sample_IDs"])
     return sample_id_df
 
@@ -45,10 +45,10 @@ def main():
 
     run_bowtie = not args.no_bowtie2 and args.bowtie2_index is not None
 
-    for forward in glob.glob(os.path.join(args.input_dir, "*_R1*.fastq*")):
-        base_name = os.path.basename(forward).replace("_R1*.fastq.gz", "").replace("_R1*.fastq", "")
+    for forward in glob.glob(os.path.join(args.input_dir, "*_R1.fastq*")):
+        base_name = os.path.basename(forward).replace("_R1.fastq.gz", "").replace("_R1.fastq", "")
  
-        reverse = os.path.join(args.input_dir, f"{base_name}_R2*.fastq.gz") if forward.endswith(".gz") else os.path.join(args.input_dir, f"{base_name}_R2*.fastq")
+        reverse = os.path.join(args.input_dir, f"{base_name}_R2.fastq.gz") if forward.endswith(".gz") else os.path.join(args.input_dir, f"{base_name}_R2.fastq")
         
         if not os.path.isfile(reverse):
             reverse = None
@@ -71,9 +71,9 @@ def main():
         merged_tsv_path = aggregate_kraken_results(args.output_dir, metadata_file=args.metadata_file, read_count=args.read_count)
 
     # Process each sample in the input directory
-    for forward in glob.glob(os.path.join(args.input_dir, "*_R1*.fastq*")):
-        base_name = os.path.basename(forward).replace("_R1*.fastq.gz", "").replace("_R1*.fastq", "")
-        reverse = os.path.join(args.input_dir, f"{base_name}_R2*.fastq.gz") if forward.endswith(".gz") else os.path.join(args.input_dir, f"{base_name}_R2*.fastq")
+    for forward in glob.glob(os.path.join(args.input_dir, "*_R1.fastq*")):
+        base_name = os.path.basename(forward).replace("_R1.fastq.gz", "").replace("_R1.fastq", "")
+        reverse = os.path.join(args.input_dir, f"{base_name}_R2.fastq.gz") if forward.endswith(".gz") else os.path.join(args.input_dir, f"{base_name}_R2.fastq")
         
         if not os.path.isfile(reverse):
             logging.warning(f"Reverse file {reverse} not found. Skipping sample {base_name}.")
