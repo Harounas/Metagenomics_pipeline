@@ -14,7 +14,7 @@ def create_sample_id_df(input_dir):
     """
     Create a DataFrame with sample IDs based on the input FASTQ file names.
     """
-    sample_ids = [os.path.basename(f).replace("_R1.fastq.gz", "").replace("_R1.fastq", "") for f in glob.glob(os.path.join(input_dir, "*_R1*.fastq*"))]
+    sample_ids = [os.path.basename(f).replace("_R1.fastq.gz", "").replace("_R1.fastq", "") for f in glob.glob(os.path.join(input_dir, "*_R1.fastq*"))]
     sample_id_df = pd.DataFrame(sample_ids, columns=["Sample_IDs"])
     return sample_id_df
 
