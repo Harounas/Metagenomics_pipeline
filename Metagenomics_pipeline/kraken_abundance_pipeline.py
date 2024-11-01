@@ -196,9 +196,9 @@ def generate_abundance_plots(merged_tsv_path, top_N):
                             # Convert RGB colors to hex format
                     hex_colors = [f"#{r:02X}{g:02x}{b:02X}" for r, g, b in colors]
                     return hex_colors
-                num_categories = len(grouped_sum[col].unique())
+                num_categories = len(grouped_sum[focus].unique())
                 # Generate distinct colors for each category
-                colors = generate_distant_colors(num_categories, min_distance=20)
+                colors = generate_distant_colors(num_categories, min_distance=50)
                 colordict = dict(zip(grouped_sum[focus].unique(), colors))
                 plot_width = 1100 + 5 * len(grouped_sum[col].unique())
                 plot_height = 800 + 5 * len(grouped_sum[col].unique())
