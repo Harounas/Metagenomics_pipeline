@@ -8,6 +8,7 @@ from .trimmomatic import run_trimmomatic
 from .bowtie2 import run_bowtie2
 from .kraken2 import run_kraken2
 import distinctipy
+import numpy as np
 
 def process_sample(forward, reverse, base_name, bowtie2_index, kraken_db, output_dir, threads, run_bowtie, use_precomputed_reports):
     try:
