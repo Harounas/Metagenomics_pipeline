@@ -187,15 +187,20 @@ def generate_abundance_plots(merged_tsv_path, top_N):
                   return np.sqrt(sum((a - b) ** 2 for a, b in zip(c1, c2)))
 
                 # Function to generate colors with a minimum distance
+               # Function to generate unique colors with a minimum distance
                 def generate_distant_colors(num_colors, min_distance=30):
-                    colors = []
-                    while len(colors) < num_colors:
-                         new_color = [random.randint(0, 255) for _ in range(3)]
-                         if all(color_distance(new_color, existing) >= min_distance for existing in colors):
-                             colors.append(new_color)
-                            # Convert RGB colors to hex format
-                    hex_colors = [f"#{r:02X}{g:02x}{b:02X}" for r, g, b in colors]
-                    return hex_colors
+                   colors = []
+                   seen_colors = set()  # To track already generated colors in tuple format
+                   while len(colors) < num_colors:
+                      new_color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+        
+                       # Check if the new color is sufficiently distant and not already seen
+                      if all(color_distance(new_color, existing) >= min_distance for existing in colors) and new_color not in seen_colors:
+                         colors.append(new_color)
+                         seen_colors.add(new_color)  # Add the new color to the set
+    # Convert RGB colors to hex format
+                   hex_colors = [f"#{r:02X}{g:02x}{b:02x}" for r, g, b in colors]
+                   return hex_colors
                 num_categories = len(grouped_sum[focus].unique())
                 # Generate distinct colors for each category
                 colors = generate_distant_colors(num_categories, min_distance=50)
