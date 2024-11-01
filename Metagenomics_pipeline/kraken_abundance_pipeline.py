@@ -175,7 +175,7 @@ def generate_abundance_plots(merged_tsv_path, top_N):
                 random_colors = ["#{:06x}".format(random.randint(0, 0xFFFFFF)) for _ in range(len(grouped_sum[col].unique()))]
                
                 #for target, color in zip(grouped_sum[focus].unique(), random_colors):
-                for target, color in zip(grouped_sum[focus].unique(), colordict):
+                for target, color in zip(grouped_sum[focus].unique(), random_colors):
                     colordict[target] = color
                 colordict=distinctipy.get_colors(len(grouped_sum[col].unique()))
                 plot_width = 1100 + 5 * len(grouped_sum[col].unique())
