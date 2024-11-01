@@ -180,9 +180,8 @@ def generate_abundance_plots(merged_tsv_path, top_N):
                 #colordict=distinctipy.get_colors(len(grouped_sum[col].unique()))
                 #colordict = dict(zip(grouped_sum[focus].unique(), distinctipy.get_colors(len(grouped_sum[focus].unique()))))
                 # Generate a unique color for each unique item in the 'focus' column
-                unique_categories = grouped_sum[focus].unique()
-                color_list = distinctipy.get_colors(len(unique_categories))
-                colordict = {category: color for category, color in zip(unique_categories, color_list)}
+                random_colors = distinctipy.get_colors(len(grouped_sum[col].unique()))
+                colordict = {focus: color for category, color in zip(grouped_sum[col].unique(), random_colors)}
                 plot_width = 1100 + 5 * len(grouped_sum[col].unique())
                 plot_height = 800 + 5 * len(grouped_sum[col].unique())
                 font_size = max(10, 14 - len(grouped_sum[col].unique()) // 10)
