@@ -171,17 +171,34 @@ def generate_abundance_plots(merged_tsv_path, top_N):
                 grouped_sum = df_focus.groupby([focus, col])['Nr_frag_direct_at_taxon'].mean().reset_index()
                 # Create a color mapping based on unique values in the 'focus' column
                 #colordict = dict(zip(grouped_sum[focus].unique(), distinctipy.get_colors(len(grouped_sum[focus].unique()))))
-                colordict = defaultdict(int)
-                random_colors = ["#{:06x}".format(random.randint(0, 0xFFFFFF)) for _ in range(len(grouped_sum[col].unique()))]
+                #colordict = defaultdict(int)
+                #random_colors = ["#{:06x}".format(random.randint(0, 0xFFFFFF)) for _ in range(len(grouped_sum[col].unique()))]
                
                 #for target, color in zip(grouped_sum[focus].unique(), random_colors):
-                for target, color in zip(grouped_sum[focus].unique(), random_colors):
-                    colordict[target] = color
+                #for target, color in zip(grouped_sum[focus].unique(), random_colors):
+                    #colordict[target] = color
                 #colordict=distinctipy.get_colors(len(grouped_sum[col].unique()))
                 #colordict = dict(zip(grouped_sum[focus].unique(), distinctipy.get_colors(len(grouped_sum[focus].unique()))))
                 # Generate a unique color for each unique item in the 'focus' column
                 #random_colors = distinctipy.get_colors(len(grouped_sum[col].unique()))
                 #colordict = {focus: color for category, color in zip(grouped_sum[col].unique(), random_colors)}
+                def color_distance(c1, c2):
+                  return np.sqrt(sum((a - b) ** 2 for a, b in zip(c1, c2)))
+
+                # Function to generate colors with a minimum distance
+                def generate_distant_colors(num_colors, min_distance=30):
+                    colors = []
+                    while len(colors) < num_colors:
+                         new_color = [random.randint(0, 255) for _ in range(3)]
+                         if all(color_distance(new_color, existing) >= min_distance for existing in colors):
+                             colors.append(new_color)
+                            # Convert RGB colors to hex format
+                    hex_colors = [f"#{r:02X}{g:02x}{b:02X}" for r, g, b in colors]
+                    return hex_colors
+                num_categories = len(grouped_sum[col].unique())
+                # Generate distinct colors for each category
+                colors = generate_distant_colors(num_categories, min_distance=90)
+                colordict = dict(zip(df["Category"].unique(), colors))
                 plot_width = 1100 + 5 * len(grouped_sum[col].unique())
                 plot_height = 800 + 5 * len(grouped_sum[col].unique())
                 font_size = max(10, 14 - len(grouped_sum[col].unique()) // 10)
