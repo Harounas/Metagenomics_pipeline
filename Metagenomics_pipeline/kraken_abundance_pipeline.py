@@ -198,7 +198,7 @@ def generate_abundance_plots(merged_tsv_path, top_N):
                 num_categories = len(grouped_sum[col].unique())
                 # Generate distinct colors for each category
                 colors = generate_distant_colors(num_categories, min_distance=90)
-                colordict = dict(zip(df["Category"].unique(), colors))
+                colordict = dict(zip(grouped_sum[focus].unique(), colors))
                 plot_width = 1100 + 5 * len(grouped_sum[col].unique())
                 plot_height = 800 + 5 * len(grouped_sum[col].unique())
                 font_size = max(10, 14 - len(grouped_sum[col].unique()) // 10)
