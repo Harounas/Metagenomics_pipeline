@@ -28,7 +28,8 @@ def main():
     parser.add_argument("--metadata_file", help="Path to the metadata CSV file (optional).")
     parser.add_argument("--no_metadata", action='store_true', help="Use sample IDs as metadata instead of a metadata file.")
     parser.add_argument("--read_count", type=int, default=0, help="Minimum read count threshold.")
-    parser.add_argument("--top_N", type=int, default=None, help="Select the top N most common viruses or bacteria.")
+    parser.add_argument("--top_N_bacteria", type=int, default=None, help="Select the top N most common bacteria.")
+    parser.add_argument("--top_N_virus", type=int, default=None, help="Select the top N most common viruses.")
     parser.add_argument("--no_bowtie2", action='store_true', help="Skip Bowtie2 host depletion.")
     parser.add_argument("--bacteria", action='store_true', help="Generate bacterial abundance plots.")
     parser.add_argument("--virus", action='store_true', help="Generate viral abundance plots.")
@@ -42,19 +43,17 @@ def main():
         logging.error(f"Kraken database directory '{args.kraken_db}' not found.")
         sys.exit(1)
 
-
     run_bowtie = not args.no_bowtie2 and args.bowtie2_index is not None
 
+    # Process each sample
     for forward in glob.glob(os.path.join(args.input_dir, "*_R1.fastq*")):
         base_name = os.path.basename(forward).replace("_R1.fastq.gz", "").replace("_R1.fastq", "")
- 
         reverse = os.path.join(args.input_dir, f"{base_name}_R2.fastq.gz") if forward.endswith(".gz") else os.path.join(args.input_dir, f"{base_name}_R2.fastq")
         
         if not os.path.isfile(reverse):
             reverse = None
 
-        process_sample(forward, reverse, base_name, args.bowtie2_index, args.kraken_db, args.output_dir, args.threads, run_bowtie,args.use_precomputed_reports)
-
+        process_sample(forward, reverse, base_name, args.bowtie2_index, args.kraken_db, args.output_dir, args.threads, run_bowtie, args.use_precomputed_reports)
 
     # Load metadata or create sample ID DataFrame
     if args.no_metadata:
@@ -70,29 +69,15 @@ def main():
             sys.exit(1)
         merged_tsv_path = aggregate_kraken_results(args.output_dir, metadata_file=args.metadata_file, read_count=args.read_count)
 
-    # Process each sample in the input directory
-    for forward in glob.glob(os.path.join(args.input_dir, "*_R1.fastq*")):
-        base_name = os.path.basename(forward).replace("_R1.fastq.gz", "").replace("_R1.fastq", "")
-        reverse = os.path.join(args.input_dir, f"{base_name}_R2.fastq.gz") if forward.endswith(".gz") else os.path.join(args.input_dir, f"{base_name}_R2.fastq")
-        
-        if not os.path.isfile(reverse):
-            logging.warning(f"Reverse file {reverse} not found. Skipping sample {base_name}.")
-            continue
-
-        try:
-            process_sample(forward, reverse, base_name, args.bowtie2_index, args.kraken_db, args.output_dir, args.threads, run_bowtie, args.use_precomputed_reports)
-        except Exception as e:
-            logging.error(f"Error processing sample {base_name}: {e}")
-
     # Generate abundance plots based on provided flags
     if merged_tsv_path and os.path.isfile(merged_tsv_path):
         if args.virus:
             logging.info("Generating viral abundance plots.")
-            generate_abundance_plots(merged_tsv_path, args.top_N)
-        elif args.bacteria:
+            generate_abundance_plots(merged_tsv_path, args.top_N_virus)
+        if args.bacteria:
             logging.info("Generating bacterial abundance plots.")
-            generate_abundance_plots(merged_tsv_path, args.top_N)
-        else:
+            generate_abundance_plots(merged_tsv_path, args.top_N_bacteria)
+        if not args.virus and not args.bacteria:
             logging.warning("No plot type specified. Use --virus or --bacteria to generate plots.")
 
 if __name__ == "__main__":
