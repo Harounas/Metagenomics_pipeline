@@ -6,7 +6,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         "pandas",
-        "plotly", "kaleido",'distinctipy',
+        "plotly", "kaleido",'distinctipy','numpy',
     ],
     entry_points={
         "console_scripts": [
