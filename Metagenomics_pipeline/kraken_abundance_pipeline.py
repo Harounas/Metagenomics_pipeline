@@ -204,6 +204,8 @@ def generate_abundance_plots(merged_tsv_path, top_N):
                 num_categories = len(grouped_sum[focus].unique())
                 # Generate distinct colors for each category
                 colors = generate_distant_colors(num_categories, min_distance=90)
+                #colors = base_colors[:len(unique_targets)]
+                colors = plt.get_cmap('tab20')
                 colordict = dict(zip(grouped_sum[focus].unique(), colors))
                 # Generate colors using 'tab20' colormap
                 #colors = plt.get_cmap('tab20').colors
