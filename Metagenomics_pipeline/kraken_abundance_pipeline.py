@@ -218,6 +218,7 @@ def generate_abundance_plots(merged_tsv_path, top_N):
                   colors = base_colors[:len(unique_targets)]
 # Map each unique target to a color from the colormap
                 colordict = dict(zip(unique_targets, colors[:len(unique_targets)]))
+                colordict = dict(zip(grouped_sum[focus].unique(), colors[:len(unique_targets)]))
                 plot_width = 1100 + 5 * len(grouped_sum[col].unique())
                 plot_height = 800 + 5 * len(grouped_sum[col].unique())
                 font_size = max(10, 14 - len(grouped_sum[col].unique()) // 10)
