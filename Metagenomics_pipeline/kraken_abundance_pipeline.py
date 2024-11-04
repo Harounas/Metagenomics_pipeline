@@ -172,12 +172,12 @@ def generate_abundance_plots(merged_tsv_path, top_N):
                 grouped_sum = df_focus.groupby([focus, col])['Nr_frag_direct_at_taxon'].mean().reset_index()
                 # Create a color mapping based on unique values in the 'focus' column
                 #colordict = dict(zip(grouped_sum[focus].unique(), distinctipy.get_colors(len(grouped_sum[focus].unique()))))
-                #colordict = defaultdict(int)
-                #random_colors = ["#{:06x}".format(random.randint(0, 0xFFFFFF)) for _ in range(len(grouped_sum[col].unique()))]
+                colordict = defaultdict(int)
+                random_colors = ["#{:06x}".format(random.randint(0, 0xFFFFFF)) for _ in range(len(grouped_sum[col].unique()))]
                
                 #for target, color in zip(grouped_sum[focus].unique(), random_colors):
-                #for target, color in zip(grouped_sum[focus].unique(), random_colors):
-                    #colordict[target] = color
+                for target, color in zip(grouped_sum[focus].unique(), random_colors):
+                    colordict[target] = color
                 #colordict=distinctipy.get_colors(len(grouped_sum[col].unique()))
                 #colordict = dict(zip(grouped_sum[focus].unique(), distinctipy.get_colors(len(grouped_sum[focus].unique()))))
                 # Generate a unique color for each unique item in the 'focus' column
@@ -205,8 +205,8 @@ def generate_abundance_plots(merged_tsv_path, top_N):
                 # Generate distinct colors for each category
                # colors = generate_distant_colors(num_categories, min_distance=90)
                 #colors = base_colors[:len(unique_targets)]
-                colors = plt.get_cmap('tab20').colors 
-                colordict = dict(zip(grouped_sum[focus].unique(), colors))
+                #colors = plt.get_cmap('tab20').colors 
+                #colordict = dict(zip(grouped_sum[focus].unique(), colors))
                 # Generate colors using 'tab20' colormap
                 #colors = plt.get_cmap('tab20').colors
 
