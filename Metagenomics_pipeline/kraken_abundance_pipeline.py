@@ -172,10 +172,8 @@ def generate_abundance_plots(merged_tsv_path, top_N):
                 grouped_sum = df_focus.groupby([focus, col])['Nr_frag_direct_at_taxon'].mean().reset_index()
                 # Create a color mapping based on unique values in the 'focus' column
                 #colordict = dict(zip(grouped_sum[focus].unique(), distinctipy.get_colors(len(grouped_sum[focus].unique()))))
-                #colordict = defaultdict(int)
-                #random_colors = ["#{:06X}".format(random.randint(0, 0xFFFFFF)) for _ in range(len(grouped_sum[col].unique()))]
-                colors  = plt.get_cmap('tab20').colors
-                random_colors = colors[:len(grouped_sum[focus].unique())]
+                colordict = defaultdict(int)
+                random_colors = ["#{:06X}".format(random.randint(0, 0xFFFFFF)) for _ in range(len(grouped_sum[col].unique()))]
                 #for target, color in zip(grouped_sum[focus].unique(), random_colors):
                 for target, color in zip(grouped_sum[focus].unique(), random_colors):
                     colordict[target] = color
