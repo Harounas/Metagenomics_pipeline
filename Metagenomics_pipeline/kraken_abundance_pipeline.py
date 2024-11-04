@@ -213,7 +213,6 @@ def generate_abundance_plots(merged_tsv_path, top_N):
                 if len(unique_targets) > len(base_colors):
                   #raise ValueError("Not enough unique colors in 'tab20' colormap for the number of unique targets.")
                   colors = plt.get_cmap('tab20')(np.linspace(0, 1, len(unique_targets))
-
                 else:
     # Use base 'tab20' colors if they are sufficient
                   colors = base_colors[:len(unique_targets)]
