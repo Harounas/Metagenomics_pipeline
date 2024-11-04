@@ -129,7 +129,7 @@ def aggregate_kraken_results(kraken_dir, metadata_file=None, sample_id_df=None, 
                                 }
 
         # Output aggregated results to a TSV file
-        merged_tsv_path = os.path.join(kraken_dir, "merged_kraken1.tsv")
+        merged_tsv_path = os.path.join(kraken_dir, "merged_kraken.tsv")
         with open(merged_tsv_path, 'w') as f:
             # Write headers dynamically
             headers = ['Perc_frag_cover', 'Nr_frag_cover', 'Nr_frag_direct_at_taxon', 'Rank_code', 'NCBI_ID', 'Scientific_name', 'SampleID'] + metadata.columns[1:].tolist()
