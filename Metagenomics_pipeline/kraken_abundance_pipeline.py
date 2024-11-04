@@ -198,26 +198,26 @@ def generate_abundance_plots(merged_tsv_path, top_N):
                       if all(color_distance(new_color, existing) >= min_distance for existing in colors) and new_color not in seen_colors:
                          colors.append(new_color)
                          seen_colors.add(new_color)  # Add the new color to the set
-    # Convert RGB colors to hex format
+                   # Convert RGB colors to hex format
                    hex_colors = [f"#{r:02X}{g:02x}{b:02x}" for r, g, b in colors]
                    return hex_colors
                # num_categories = len(grouped_sum[focus].unique())
                 # Generate distinct colors for each category
-                #colors = generate_distant_colors(num_categories, min_distance=20)
-                #colordict = dict(zip(grouped_sum[focus].unique(), colors))
+                colors = generate_distant_colors(num_categories, min_distance=20)
+                colordict = dict(zip(grouped_sum[focus].unique(), colors))
                 # Generate colors using 'tab20' colormap
-                base_colors = plt.get_cmap('tab20').colors
+                #base_colors = plt.get_cmap('tab20').colors
 
 # Ensure there are enough colors for unique items in grouped_sum[focus]
-                unique_targets = grouped_sum[focus].unique()
-                if len(unique_targets) > len(base_colors):
+                #unique_targets = grouped_sum[focus].unique()
+                #if len(unique_targets) > len(base_colors):
                   #raise ValueError("Not enough unique colors in 'tab20' colormap for the number of unique targets.")
-                  colors = plt.get_cmap('tab20')(np.linspace(0, 1, len(unique_targets)))
-                else:
+                  #colors = plt.get_cmap('tab20')(np.linspace(0, 1, len(unique_targets)))
+                #else:
     # Use base 'tab20' colors if they are sufficient
-                  colors = base_colors[:len(unique_targets)]
+                 # colors = base_colors[:len(unique_targets)]
 # Map each unique target to a color from the colormap
-                colordict = dict(zip(grouped_sum[focus].unique(), colors[:len(unique_targets)]))
+                #colordict = dict(zip(grouped_sum[focus].unique(), colors[:len(unique_targets)]))
                 plot_width = 1100 + 5 * len(grouped_sum[col].unique())
                 plot_height = 800 + 5 * len(grouped_sum[col].unique())
                 font_size = max(10, 14 - len(grouped_sum[col].unique()) // 10)
