@@ -203,21 +203,21 @@ def generate_abundance_plots(merged_tsv_path, top_N):
                    return hex_colors
                 num_categories = len(grouped_sum[focus].unique())
                 # Generate distinct colors for each category
-                colors = generate_distant_colors(num_categories, min_distance=90)
-                colordict = dict(zip(grouped_sum[focus].unique(), colors))
+                #colors = generate_distant_colors(num_categories, min_distance=90)
+                #colordict = dict(zip(grouped_sum[focus].unique(), colors))
                 # Generate colors using 'tab20' colormap
-                #base_colors = plt.get_cmap('tab20').colors
+                colors = plt.get_cmap('tab20').colors
 
-# Ensure there are enough colors for unique items in grouped_sum[focus]
-                #unique_targets = grouped_sum[focus].unique()
+                  # Ensure there are enough colors for unique items in grouped_sum[focus]
+                unique_targets = grouped_sum[focus].unique()
                 #if len(unique_targets) > len(base_colors):
                   #raise ValueError("Not enough unique colors in 'tab20' colormap for the number of unique targets.")
                   #colors = plt.get_cmap('tab20')(np.linspace(0, 1, len(unique_targets)))
                 #else:
-    # Use base 'tab20' colors if they are sufficient
+                # Use base 'tab20' colors if they are sufficient
                  # colors = base_colors[:len(unique_targets)]
-# Map each unique target to a color from the colormap
-                #colordict = dict(zip(grouped_sum[focus].unique(), colors[:len(unique_targets)]))
+                 # Map each unique target to a color from the colormap
+                colordict = dict(zip(grouped_sum[focus].unique(), colors[:len(unique_targets)]))
                 plot_width = 1100 + 5 * len(grouped_sum[col].unique())
                 plot_height = 800 + 5 * len(grouped_sum[col].unique())
                 font_size = max(10, 14 - len(grouped_sum[col].unique()) // 10)
