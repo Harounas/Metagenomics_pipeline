@@ -80,6 +80,34 @@ def main():
             logging.warning(f"No matching R2 file found for {base_name}. Skipping.")
 
     # Metadata handling and abundance plot generation logic remains the same...
+       # Load metadata or create sample ID DataFrame
+    if args.no_metadata:
+        sample_id_df = create_sample_id_df(args.input_dir)
+        logging.info("Using sample IDs as metadata.")
+        sample_id_df.to_csv(os.path.join(args.output_dir, "sample_ids.csv"), index=False)
+        merged_tsv_path = aggregate_kraken_results(args.output_dir, sample_id_df=sample_id_df, read_count=args.read_count)
+    else:
+        if not args.metadata_file:
+            raise ValueError("Metadata file must be provided if --no_metadata is not specified.")
+        elif not os.path.isfile(args.metadata_file):
+            logging.error(f"Metadata file '{args.metadata_file}' not found.")
+            sys.exit(1)
+        merged_tsv_path = aggregate_kraken_results(args.output_dir, metadata_file=args.metadata_file, read_count=args.read_count)
+
+
+
+    # Generate abundance plots based on provided flags
+    if merged_tsv_path and os.path.isfile(merged_tsv_path):
+        if args.virus:
+            logging.info("Generating viral abundance plots.")
+            generate_abundance_plots(merged_tsv_path, args.top_N)
+        elif args.bacteria:
+            logging.info("Generating bacterial abundance plots.")
+            generate_abundance_plots(merged_tsv_path, args.top_N)
+        else:
+            logging.warning("No plot type specified. Use --virus or --bacteria to generate plots.")
+
+        
 
 if __name__ == "__main__":
     main()
