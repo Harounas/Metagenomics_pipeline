@@ -173,7 +173,7 @@ def generate_abundance_plots(merged_tsv_path, top_N):
                 # Create a color mapping based on unique values in the 'focus' column
                 #colordict = dict(zip(grouped_sum[focus].unique(), distinctipy.get_colors(len(grouped_sum[focus].unique()))))
                 colordict = defaultdict(int)
-                random_colors = ["#{:06X}".format(random.randint(0, 0xFFFFFF)) for _ in range(len(grouped_sum[col].unique()))]
+                random_colors = ["#{:06X}".format(random.randint(0, 0xFFFFFF)) for _ in range(len(grouped_sum[focus].unique()))]
                 #for target, color in zip(grouped_sum[focus].unique(), random_colors):
                 for target, color in zip(grouped_sum[focus].unique(), random_colors):
                     colordict[target] = color
@@ -200,7 +200,7 @@ def generate_abundance_plots(merged_tsv_path, top_N):
                    # Convert RGB colors to hex format
                    hex_colors = [f"#{r:02x}{g:02x}{b:02x}" for r, g, b in colors]
                    return hex_colors
-                num_categories = len(grouped_sum[focus].unique())
+                #num_categories = len(grouped_sum[focus].unique())
                 # Generate distinct colors for each category
                # colors = generate_distant_colors(num_categories, min_distance=90)
                 #colors = base_colors[:len(unique_targets)]
