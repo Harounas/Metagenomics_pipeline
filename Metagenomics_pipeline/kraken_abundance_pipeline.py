@@ -206,13 +206,17 @@ def generate_abundance_plots(merged_tsv_path, top_N):
                 #colors = generate_distant_colors(num_categories, min_distance=20)
                 #colordict = dict(zip(grouped_sum[focus].unique(), colors))
                 # Generate colors using 'tab20' colormap
-                colors = plt.get_cmap('tab20').colors
+                base_colors = plt.get_cmap('tab20').colors
 
 # Ensure there are enough colors for unique items in grouped_sum[focus]
                 unique_targets = grouped_sum[focus].unique()
-                if len(unique_targets) > len(colors):
-                  raise ValueError("Not enough unique colors in 'tab20' colormap for the number of unique targets.")
+                if len(unique_targets) > len(base_colors):
+                  #raise ValueError("Not enough unique colors in 'tab20' colormap for the number of unique targets.")
+                  colors = plt.get_cmap('tab20')(np.linspace(0, 1, len(unique_targets))
 
+                else:
+    # Use base 'tab20' colors if they are sufficient
+                  colors = base_colors[:len(unique_targets)]
 # Map each unique target to a color from the colormap
                 colordict = dict(zip(unique_targets, colors[:len(unique_targets)]))
                 plot_width = 1100 + 5 * len(grouped_sum[col].unique())
