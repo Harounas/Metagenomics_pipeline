@@ -177,6 +177,16 @@ def generate_abundance_plots(merged_tsv_path, top_N):
                 #for target, color in zip(grouped_sum[focus].unique(), random_colors):
                 for target, color in zip(grouped_sum[focus].unique(), random_colors):
                     colordict[target] = color
+                unique_targets = grouped_sum[focus].unique()
+                num_unique_targets = len(unique_targets)
+
+# Use the 'hsv' colormap to generate a set of distinct colors
+                colors = plt.get_cmap('hsv')(np.linspace(0, 1, num_unique_targets))
+
+# Create a color dictionary mapping each unique target to a color
+                colordict = defaultdict(int)
+                for target, color in zip(unique_targets, colors):
+                  colordict[target] = color
                 #colordict=distinctipy.get_colors(len(grouped_sum[col].unique()))
                 #colordict = dict(zip(grouped_sum[focus].unique(), distinctipy.get_colors(len(grouped_sum[focus].unique()))))
                 # Generate a unique color for each unique item in the 'focus' column
