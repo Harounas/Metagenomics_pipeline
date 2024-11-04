@@ -181,7 +181,7 @@ def generate_abundance_plots(merged_tsv_path, top_N):
                 num_unique_targets = len(unique_targets)
 
 # Use the 'hsv' colormap to generate a set of distinct colors
-                colors = plt.get_cmap('hsv')(np.linspace(0, 1, num_unique_targets))
+                colors = list(plt.get_cmap('hsv')(np.linspace(0, 1, num_unique_targets)))
 
 # Create a color dictionary mapping each unique target to a color
                 colordict = defaultdict(int)
