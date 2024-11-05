@@ -177,7 +177,7 @@ def generate_abundance_plots(merged_tsv_path, top_N):
                 #random_colors = ['#{:06x}'.format(random.randint(000000, 0xffff00)) for _ in range(len(grouped_sum[focus].unique()))]
                 random_colors1 =['#000000','#FFD700','#FF0000','#00FF00','#0000FF','#FFFF00','#00FFFF','#FF00FF','#C0C0C0','#808080','#800000','#808000','#008000','#800080',
 '#008080','#000080','#CD5C5C','#DAA520','#FFA500','#F0E68C','#ADFF2F','#2F4F4F','#E0FFFF','#4169E1','#8A2BE2','#4B0082','#8B008B','#EE82EE','#DA70D6','#D2691E','#BC8F8F']              #for target, color in zip(grouped_sum[focus].unique(), random_colors):
-                if len(grouped_sum[focus].unique())=<len(random_colors1):
+                if (len(grouped_sum[focus].unique())<=len(random_colors1)):
                   for target, color in zip(grouped_sum[focus].unique(), random_colors1[:len(grouped_sum[focus].unique())]):
                     colordict[target] = color
                 else :
