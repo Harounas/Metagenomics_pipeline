@@ -174,7 +174,7 @@ def generate_abundance_plots(merged_tsv_path, top_N):
                 #colordict = dict(zip(grouped_sum[focus].unique(), distinctipy.get_colors(len(grouped_sum[focus].unique()))))
                 colordict = defaultdict(int)
                 #random_colors = ["#{:06X}".format(random.randint(0, 0xFFFFFF)) for _ in range(len(grouped_sum[focus].unique()))]
-                random_colors = ['#{:06x}'.format(random.randint(0xff0000, 0xffff00)) for _ in range(len(grouped_sum[focus].unique()))]
+                random_colors = ['#{:06x}'.format(random.randint(000000, 0xffff00)) for _ in range(len(grouped_sum[focus].unique()))]
                 
                 #for target, color in zip(grouped_sum[focus].unique(), random_colors):
                 for target, color in zip(grouped_sum[focus].unique(), random_colors):
