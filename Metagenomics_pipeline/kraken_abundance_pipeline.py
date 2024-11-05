@@ -259,7 +259,8 @@ def generate_abundance_plots(merged_tsv_path, top_N):
                     height=plot_height
                 )
 
-                fig.write_image(f"{plot_title}_Abundance_by_{col}.png", format='png', scale=3)
+                fig.write_image(f"{plot_title}_Abundance_by_{col}.png", format='png', scale=3,width=1920, height=1080)
+           
 
     except Exception as e:
         print(f"Error generating abundance plots: {e}")
