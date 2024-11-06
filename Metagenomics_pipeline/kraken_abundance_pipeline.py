@@ -143,7 +143,8 @@ def aggregate_kraken_results(kraken_dir, metadata_file=None, sample_id_df=None, 
         print(f"Error aggregating Kraken results: {e}")
         return None
 
-def generate_abundance_plots(merged_tsv_path, top_N):
+
+        def generate_abundance_plots(merged_tsv_path, top_N):
     try:
         df = pd.read_csv(merged_tsv_path, sep="\t")
         df.columns = df.columns.str.replace('/', '_').str.replace(' ', '_')
@@ -157,29 +158,16 @@ def generate_abundance_plots(merged_tsv_path, top_N):
         ]:
             if focus == 'Bacteria_Type':
                 df_focus = df[~df['Scientific_name'].str.contains(filter_str, case=False, na=False)]
-     
-                    
-                #print(df_focus['Bacteria_Type'].unique, 'list of bacteria')
             else:
                 df_focus = df[df['Scientific_name'].str.contains(filter_str, case=False, na=False)]
-             
-               # print(df_focus['Virus_Type'].unique, 'list of viruses')
-                df_focus = df_focus.rename(columns={'Scientific_name': focus})
+            df_focus = df_focus.rename(columns={'Scientific_name': focus})
 
             if top_N:
                 top_N_categories = df_focus[focus].value_counts().head(top_N).index
                 df_focus = df_focus[df_focus[focus].isin(top_N_categories)]
-        
 
             categorical_cols = df_focus.select_dtypes(include=['object']).columns.tolist()
             categorical_cols.remove(focus)
-
-           
-            #for col in  categorical_cols:
-                #if  filt_bact and focus=='Bacteria_Type':
-                 # df_focus = df_focus[df_focus[focus]!=filt_bact]
-                #elif filt_virus and focus=='Virus_Type':
-                  # df_focus = df_focus[df_focus[focus]!=filt_virus]
             for col in categorical_cols:
                 grouped_sum = df_focus.groupby([focus, col])['Nr_frag_direct_at_taxon'].mean().reset_index()
                 # Create a color mapping based on unique values in the 'focus' column
