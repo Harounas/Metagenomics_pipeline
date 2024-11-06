@@ -143,8 +143,7 @@ def aggregate_kraken_results(kraken_dir, metadata_file=None, sample_id_df=None, 
         print(f"Error aggregating Kraken results: {e}")
         return None
 
-
-        def generate_abundance_plots(merged_tsv_path, top_N):
+def generate_abundance_plots(merged_tsv_path, top_N):
     try:
         df = pd.read_csv(merged_tsv_path, sep="\t")
         df.columns = df.columns.str.replace('/', '_').str.replace(' ', '_')
@@ -168,6 +167,7 @@ def aggregate_kraken_results(kraken_dir, metadata_file=None, sample_id_df=None, 
 
             categorical_cols = df_focus.select_dtypes(include=['object']).columns.tolist()
             categorical_cols.remove(focus)
+
             for col in categorical_cols:
                 grouped_sum = df_focus.groupby([focus, col])['Nr_frag_direct_at_taxon'].mean().reset_index()
                 # Create a color mapping based on unique values in the 'focus' column
