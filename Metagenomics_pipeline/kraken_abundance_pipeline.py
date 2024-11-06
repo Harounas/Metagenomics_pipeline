@@ -157,7 +157,7 @@ def generate_abundance_plots(merged_tsv_path, top_N,filt_bact,filt_virus):
         ]:
             if focus == 'Bacteria_Type':
                 df_focus = df[~df['Scientific_name'].str.contains(filter_str, case=False, na=False)]
-                print(df_focus['Bacteria_Type'].unique, 'list of bacteria')
+                #print(df_focus['Bacteria_Type'].unique, 'list of bacteria')
             else:
                 df_focus = df[df['Scientific_name'].str.contains(filter_str, case=False, na=False)]
                # print(df_focus['Virus_Type'].unique, 'list of viruses')
