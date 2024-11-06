@@ -111,10 +111,10 @@ def main():
 
         if args.filt_virus:
             logging.info("Generating viral abundance plots.")
-            generate_abundance_plots(merged_tsv_path, args.filt_bact,args.filt_virus)
+            generate_abundance_plots(merged_tsv_path,args.top_N,args.filt_virus, args.filt_bact)
         elif args.filt_bact:
             logging.info("Generating bacterial abundance plots.")
-            generate_abundance_plots(merged_tsv_path, args.filt_bact,args.filt_virus)
+            generate_abundance_plots(merged_tsv_path,args.top_N,args.filt_virus, args.filt_bact)
 
 if __name__ == "__main__":
     main()
