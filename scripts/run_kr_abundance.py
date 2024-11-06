@@ -36,8 +36,8 @@ def main():
     parser.add_argument("--no_metadata", action='store_true', help="Use sample IDs as metadata instead of a metadata file.")
     parser.add_argument("--read_count", type=int, default=0, help="Minimum read count threshold.")
     parser.add_argument("--top_N", type=int, default=None, help="Select the top N most common viruses or bacteria.")
-    parser.add_argument("--filt_virus", required=False,type=None, default=None, help="Select a virus to exclude.")
-    parser.add_argument("--filt_bact", required=False,type=None, default=None, help="Select a bacteria to exclude.")
+    #parser.add_argument("--filt_virus", required=False,type=None, default=None, help="Select a virus to exclude.")
+    #parser.add_argument("--filt_bact", required=False,type=None, default=None, help="Select a bacteria to exclude.")
     parser.add_argument("--no_bowtie2", action='store_true', help="Skip Bowtie2 host depletion.")
     parser.add_argument("--bacteria", action='store_true', help="Generate bacterial abundance plots.")
     parser.add_argument("--virus", action='store_true', help="Generate viral abundance plots.")
@@ -102,19 +102,14 @@ def main():
     if merged_tsv_path and os.path.isfile(merged_tsv_path):
         if args.virus:
             logging.info("Generating viral abundance plots.")
-            generate_abundance_plots(merged_tsv_path, args.filt_bact,args.filt_virus,args.top_N)
+            generate_abundance_plots(merged_tsv_path, args.filt_bact)
         elif args.bacteria:
             logging.info("Generating bacterial abundance plots.")
-            generate_abundance_plots(merged_tsv_path, args.top_N,args.filt_bact,args.filt_virus)
+            generate_abundance_plots(merged_tsv_path, args.top_N)
         else:
             logging.warning("No plot type specified. Use --virus or --bacteria to generate plots.")
 
-        if args.filt_virus:
-            logging.info("Generating viral abundance plots.")
-            generate_abundance_plots(merged_tsv_path,args.top_N,args.filt_virus, args.filt_bact)
-        elif args.filt_bact:
-            logging.info("Generating bacterial abundance plots.")
-            generate_abundance_plots(merged_tsv_path,args.top_N,args.filt_virus, args.filt_bact)
+     
 
 if __name__ == "__main__":
     main()
