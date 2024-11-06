@@ -168,6 +168,8 @@ def generate_abundance_plots(merged_tsv_path, top_N,filt_bact,filt_virus):
 
             categorical_cols = df_focus.select_dtypes(include=['object']).columns.tolist()
             categorical_cols.remove(focus)
+            print(df_focus['Bacteria_Type'].unique, 'list of bacteria')
+            print(df_focus['Virus'].unique, 'list of viruses')
             for col in  categorical_cols:
                 if  filt_bact and focus=='Bacteria_Type':
                   df_focus = df_focus[df_focus[focus]!=filt_bact]
