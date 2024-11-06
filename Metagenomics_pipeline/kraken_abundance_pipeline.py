@@ -168,10 +168,10 @@ def generate_abundance_plots(merged_tsv_path, top_N,filt_bact,filt_virus):
 
             categorical_cols = df_focus.select_dtypes(include=['object']).columns.tolist()
             categorical_cols.remove(focus)
-            for col in  ategorical_cols:
+            for col in  categorical_cols:
                 if  filt_bact and focus=='Bacteria_Type':
                   df_focus = df_focus[df_focus[focus]!=filt_bact]
-                elif filt_virus and focus=='Bacteria_Type'
+                elif filt_virus and focus=='Bacteria_Type':
                    df_focus = df_focus[df_focus[focus]!=filt_virus]
             for col in categorical_cols:
                 grouped_sum = df_focus.groupby([focus, col])['Nr_frag_direct_at_taxon'].mean().reset_index()
