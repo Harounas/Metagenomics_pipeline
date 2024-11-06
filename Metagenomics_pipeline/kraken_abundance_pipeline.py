@@ -143,7 +143,7 @@ def aggregate_kraken_results(kraken_dir, metadata_file=None, sample_id_df=None, 
         print(f"Error aggregating Kraken results: {e}")
         return None
 
-def generate_abundance_plots(merged_tsv_path, top_N,filt_bact,filt_virus):
+def generate_abundance_plots(merged_tsv_path, top_N):
     try:
         df = pd.read_csv(merged_tsv_path, sep="\t")
         df.columns = df.columns.str.replace('/', '_').str.replace(' ', '_')
@@ -157,15 +157,12 @@ def generate_abundance_plots(merged_tsv_path, top_N,filt_bact,filt_virus):
         ]:
             if focus == 'Bacteria_Type':
                 df_focus = df[~df['Scientific_name'].str.contains(filter_str, case=False, na=False)]
-                if  filt_bact:
-                    df_focus = df_focus[df_focus['Scientific_name']!=filt_bact]
+     
                     
                 #print(df_focus['Bacteria_Type'].unique, 'list of bacteria')
             else:
                 df_focus = df[df['Scientific_name'].str.contains(filter_str, case=False, na=False)]
-                if filt_virus:
-                  print(df_focus.columns)
-                  df_focus = df_focus[df_focus['Scientific_name']!=filt_virus]
+             
                # print(df_focus['Virus_Type'].unique, 'list of viruses')
                 df_focus = df_focus.rename(columns={'Scientific_name': focus})
 
@@ -176,7 +173,7 @@ def generate_abundance_plots(merged_tsv_path, top_N,filt_bact,filt_virus):
 
             categorical_cols = df_focus.select_dtypes(include=['object']).columns.tolist()
             categorical_cols.remove(focus)
-            print(categorical_cols)
+
            
             #for col in  categorical_cols:
                 #if  filt_bact and focus=='Bacteria_Type':
