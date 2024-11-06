@@ -157,9 +157,14 @@ def generate_abundance_plots(merged_tsv_path, top_N,filt_bact,filt_virus):
         ]:
             if focus == 'Bacteria_Type':
                 df_focus = df[~df['Scientific_name'].str.contains(filter_str, case=False, na=False)]
+                if  filt_bact:
+                    df_focus = df_focus[df_focus['Scientific_name']!=filt_bact]
+                    
                 #print(df_focus['Bacteria_Type'].unique, 'list of bacteria')
             else:
                 df_focus = df[df['Scientific_name'].str.contains(filter_str, case=False, na=False)]
+                if filt_virus:
+                df_focus = df_focus[df_focus['Scientific_name']!=filt_virus]
                # print(df_focus['Virus_Type'].unique, 'list of viruses')
                 df_focus = df_focus.rename(columns={'Scientific_name': focus})
 
@@ -170,13 +175,13 @@ def generate_abundance_plots(merged_tsv_path, top_N,filt_bact,filt_virus):
 
             categorical_cols = df_focus.select_dtypes(include=['object']).columns.tolist()
             categorical_cols.remove(focus)
-    
+            print(categorical_cols)
            
-            for col in  categorical_cols:
-                if  filt_bact and focus=='Bacteria_Type':
-                  df_focus = df_focus[df_focus[focus]!=filt_bact]
-                elif filt_virus and focus=='Virus_Type':
-                   df_focus = df_focus[df_focus[focus]!=filt_virus]
+            #for col in  categorical_cols:
+                #if  filt_bact and focus=='Bacteria_Type':
+                 # df_focus = df_focus[df_focus[focus]!=filt_bact]
+                #elif filt_virus and focus=='Virus_Type':
+                  # df_focus = df_focus[df_focus[focus]!=filt_virus]
             for col in categorical_cols:
                 grouped_sum = df_focus.groupby([focus, col])['Nr_frag_direct_at_taxon'].mean().reset_index()
                 # Create a color mapping based on unique values in the 'focus' column
