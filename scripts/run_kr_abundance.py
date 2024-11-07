@@ -36,12 +36,14 @@ def main():
     parser.add_argument("--no_metadata", action='store_true', help="Use sample IDs as metadata instead of a metadata file.")
     parser.add_argument("--read_count", type=int, default=0, help="Minimum read count threshold.")
     parser.add_argument("--top_N", type=int, default=None, help="Select the top N most common viruses or bacteria.")
-    #parser.add_argument("--filt_virus", required=False,type=None, default=None, help="Select a virus to exclude.")
-    #parser.add_argument("--filt_bact", required=False,type=None, default=None, help="Select a bacteria to exclude.")
     parser.add_argument("--no_bowtie2", action='store_true', help="Skip Bowtie2 host depletion.")
     parser.add_argument("--bacteria", action='store_true', help="Generate bacterial abundance plots.")
     parser.add_argument("--virus", action='store_true', help="Generate viral abundance plots.")
     parser.add_argument("--use_precomputed_reports", action='store_true', help="Use precomputed Kraken reports instead of running Kraken2.")
+    
+    # Add new arguments for excluding bacteria/virus species
+    parser.add_argument("--filt_bact", type=str, help="Comma-separated list of bacteria species to exclude.")
+    parser.add_argument("--filt_virus", type=str, help="Comma-separated list of virus species to exclude.")
     
     args = parser.parse_args()
     os.makedirs(args.output_dir, exist_ok=True)
@@ -82,7 +84,6 @@ def main():
             logging.warning(f"No matching R2 file found for {base_name}. Skipping.")
 
     # Metadata handling and abundance plot generation logic remains the same...
-       # Load metadata or create sample ID DataFrame
     if args.no_metadata:
         sample_id_df = create_sample_id_df(args.input_dir)
         logging.info("Using sample IDs as metadata.")
@@ -96,20 +97,29 @@ def main():
             sys.exit(1)
         merged_tsv_path = aggregate_kraken_results(args.output_dir, metadata_file=args.metadata_file, read_count=args.read_count)
 
-
-
-    # Generate abundance plots based on provided flags
+    # Filter out bacteria/virus species if specified
     if merged_tsv_path and os.path.isfile(merged_tsv_path):
+        df = pd.read_csv(merged_tsv_path, sep="\t")
+        
+        if args.filt_bact:
+            bacteria_to_exclude = args.filt_bact.split(',')
+            df = df[~df['Scientific_name'].isin(bacteria_to_exclude)]
+            logging.info(f"Excluding bacteria species: {bacteria_to_exclude}")
+
+        if args.filt_virus:
+            virus_to_exclude = args.filt_virus.split(',')
+            df = df[~df['Scientific_name'].isin(virus_to_exclude)]
+            logging.info(f"Excluding virus species: {virus_to_exclude}")
+
+        # Now generate the plots with the filtered data
         if args.virus:
             logging.info("Generating viral abundance plots.")
-            generate_abundance_plots(merged_tsv_path,args.top_N)
+            generate_abundance_plots(df, args.top_N)
         elif args.bacteria:
             logging.info("Generating bacterial abundance plots.")
-            generate_abundance_plots(merged_tsv_path, args.top_N)
+            generate_abundance_plots(df, args.top_N)
         else:
             logging.warning("No plot type specified. Use --virus or --bacteria to generate plots.")
-
-     
 
 if __name__ == "__main__":
     main()
